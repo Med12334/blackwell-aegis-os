@@ -1,0 +1,8 @@
+[package]
+name = "blackwell-rust-fabric-guard"
+version = "1.0.0"
+edition = "2021"
+authors = ["Med12334 <Mohamedkhelifi41@gmail.com>"]
+description = "Layers 6-11: Memory-Safe Rust InfiniBand PKey/MKey Guard, Enroot Container Hardener & Zero-Trust VRF/VLAN Firewall"
+
+[dependencies]

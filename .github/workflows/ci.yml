@@ -1,0 +1,90 @@
+name: Blackwell-Aegis-OS 36-Layer Cluster Security CI Matrix
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  layer35-architecture-security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run 36-Layer Pre-Flight Security Architecture Verifier
+        run: bash ./scripts/verify-blackwell-aegis.sh
+
+  layers1to3-cpp20-nvlink-and-firmware-sentinel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile & Execute C++20 SPDM Firmware & NVLink IMEX Sentinel
+        run: |
+          g++ -std=c++20 -O3 -Wall -Wextra cpp20-nvlink-firmware-sentinel/src/nvlink_firmware_sentinel.cpp -o cpp_nvlink_test
+          ./cpp_nvlink_test
+
+  layers4to5-c11-ebpf-and-selinux-lsm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile & Execute ANSI C11 eBPF Syscall & SELinux/AppArmor Hook
+        run: |
+          gcc -std=c11 -O3 -Wall -Wextra c11-ebpf-selinux-lsm/src/ebpf_selinux_lsm.c -o c_ebpf_selinux_test
+          ./c_ebpf_selinux_test
+
+  layers6to11-rust-infiniband-enroot-and-ztna:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Memory-Safe Rust InfiniBand PKey/MKey, Enroot & VRF/VLAN Tests
+        working-directory: ./rust-infiniband-enroot-guard
+        run: cargo test --verbose
+
+  layers12to17-python-mythos-ai-and-incident-response:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run Mythos AI Agent Sandbox & Cluster IR/DR/RCA Pytest Suite
+        working-directory: ./python-mythos-agent-sandbox
+        run: |
+          pip install -r requirements.txt
+          PYTHONPATH=. pytest -v
+
+  layers18to23-go-oauth21-fido2-kerberos-freeipa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Run Go OAuth 2.1, FIDO2/WebAuthn, AD/Entra Kerberos & FreeIPA HBAC Tests
+        working-directory: ./go-zero-trust-ipa-identity
+        run: go test -v ./...
+
+  layers24to28-c11-slurm-vram-and-lustre-nfs-hardening:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile & Execute C11 Slurm GPU HBM3e VRAM Scrubber & Lustre/NFSv4.2 Verifier
+        run: |
+          gcc -std=c11 -O3 -Wall -Wextra hpc-slurm-lustre-hardening/src/slurm_epilog_vram_scrubber.c -o c_slurm_scrubber_test
+          ./c_slurm_scrubber_test
+
+  layers29to33-java17-cvss4-sbom-governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Run Java 17 CVSS v4.0, CycloneDX SBOM & Merkle Governance Audit Suite
+        working-directory: ./java-cvss4-sbom-governance
+        run: mvn clean test
